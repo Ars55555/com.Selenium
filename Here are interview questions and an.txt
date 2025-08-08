@@ -1,0 +1,79 @@
+Here are interview questions and answers based on the provided BookShelvesPage class, which is part of a Page Object Model (POM) framework using Selenium WebDriver and Java. These questions cover key automation concepts, coding practices, and design understanding.
+
+✅ Basic Selenium & POM Questions
+1. What is the purpose of the BookShelvesPage class?
+Answer:
+The BookShelvesPage class represents a Page Object for the Book Shelves section of a website. It encapsulates all the WebElements and user interactions specific to that page, enabling cleaner and more maintainable test scripts.
+
+2. Why do we use @FindBy annotations in this class?
+Answer:
+@FindBy is used to locate web elements using PageFactory, which helps in initializing elements when the class is instantiated. This promotes better readability and reduces code duplication.
+
+3. What is the purpose of the PageFactory.initElements() call in the constructor?
+Answer:
+It initializes all the WebElements defined using @FindBy annotations so that they can be interacted with. Without this, those elements would not be instantiated and would result in NullPointerException.
+
+✅ WebDriver Waits & Actions
+4. What does the method closeM() do?
+Answer:
+It waits for the modal close button to be visible using WebDriverWait, then performs a click to close the modal popup.
+
+5. Explain how dragMaxSliderAndCheck() works.                                                         
+Answer:
+This method simulates a drag-and-drop action on the price slider to adjust the maximum price. It waits for the loader to disappear and then ensures that at least one product is visible after the filtering.
+
+6. What is the use of ExpectedConditions.invisibilityOf() in your code?
+Answer:
+It is used to wait until a specific element (e.g., a loading spinner or loader) is no longer visible before proceeding. This helps avoid interacting with elements while the page is still loading.
+
+✅ Functional Logic
+7. What is the purpose of checkOpenType()?
+Answer:
+It hovers over the “Storage Type” filter and waits for the dropdown to be visible. It then checks if the "Open" type checkbox is displayed, indicating that the filter was successfully revealed.
+
+8. How does getReqItems() work?
+Answer:
+It scrolls the first item into view using JavaScript and returns a list containing the top 3 bookshelf product WebElements for further processing (like extracting names or prices).
+
+✅ Utility Integration & Data Handling
+9. How is Excel used in this framework?
+Answer:
+The class uses an ExcelUtils utility class to write the item names and prices to an Excel file (outputData.xlsx) for record-keeping or validation.
+
+10. What does storePriceList() do?
+Answer:
+It saves the prices of the filtered bookshelf items into the Excel file under the "BookShelves" sheet in the "Price" column.
+
+✅ Advanced Questions
+11. How would you handle stale element exceptions in this class?
+Answer:
+Wrap the element interaction in a try-catch block or implement retry logic. Using ExpectedConditions.refreshed() or re-fetching the element before interacting again can help handle stale elements.
+
+12. If the structure of the bookshelf items changes (e.g., more items shown), how would you make getReqItems() dynamic?
+Answer:
+Instead of using listEle1, listEle2, listEle3, use:
+
+java
+Copy
+Edit
+List<WebElement> items = driver.findElements(By.xpath("//ul[contains(@class, 'productlist')]/li"));
+Then work with a loop or subList to get top N items.
+
+13. How would you make this class more maintainable or scalable?
+Answer:
+
+Replace hardcoded indexes with dynamic lists.
+
+Separate locators from logic using a Locators interface or constants.
+
+Use logging instead of silent exception handling (try-catch blocks).
+
+Parameterize actions (e.g., filter by price or type).
+
+14. What are the risks of using hardcoded XPaths in your POM class?
+Answer:
+Hardcoded or absolute XPaths are brittle and likely to break with minor DOM changes. It’s better to use relative XPaths or other locator strategies like IDs or data attributes.
+
+15. What design pattern does this class follow and why is it useful in test automation?
+Answer:
+It follows the Page Object Model (POM) design pattern. It separates page structure and actions from test logic, improving code reusability, readability, and maintainability.

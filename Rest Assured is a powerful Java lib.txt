@@ -1,0 +1,151 @@
+Rest Assured is a powerful Java library for testing RESTful APIs. Here are some common interview questions and examples to help you prepare.
+
+Foundational Interview Questions
+These questions test your understanding of the basic concepts of Rest Assured and API testing in general.
+
+What is Rest Assured, and why is it used for API testing?
+
+Answer: Rest Assured is a Java DSL (Domain-Specific Language) for testing RESTful web services. It simplifies the process of making HTTP requests and validating responses. It provides a BDD (Behavior-Driven Development) syntax (given-when-then) that makes tests highly readable and maintainable.
+
+Explain the given(), when(), and then() methods in Rest Assured.
+
+Answer: These are the core methods that follow the BDD style:
+
+given(): This is for setting up the request. You specify preconditions like headers, cookies, authentication, request body, and parameters.
+
+when(): This is for the action. You specify the HTTP method (GET, POST, PUT, DELETE) and the endpoint to be tested.
+
+then(): This is for validation. You assert the response, including the status code, response body, headers, and response time.
+
+How do you add Rest Assured to a Maven project?
+
+Answer: You need to add the Rest Assured dependency to your pom.xml file. A typical dependency would look like this:
+
+XML
+
+<dependency>
+    <groupId>io.rest-assured</groupId>
+    <artifactId>rest-assured</artifactId>
+    <version>5.3.0</version>
+    <scope>test</scope>
+</dependency>
+What is method chaining in Rest Assured?
+
+Answer: Method chaining is a design pattern where each method call returns the same object, allowing you to link multiple method calls in a single, fluent line. This makes the code concise and highly readable, which is a key feature of Rest Assured's BDD syntax. For example: given().when().get().then().
+
+What are POJOs (Plain Old Java Objects) and how are they used with Rest Assured?
+
+Answer: POJOs are simple Java objects with private fields, public getters and setters, and a no-argument constructor. In Rest Assured, they are used for serialization and deserialization. You can serialize a POJO to a JSON payload for a POST or PUT request, and you can deserialize a JSON response back into a POJO for easier validation.
+
+How do you handle different types of authentication in Rest Assured?
+
+Answer: Rest Assured provides built-in support for various authentication schemes:
+
+Basic Authentication: given().auth().basic("username", "password")
+
+OAuth 2.0: given().auth().oauth2("your_access_token")
+
+Digest Authentication: given().auth().digest("username", "password")
+
+API Key: You can pass the API key in the header or as a query parameter: given().header("X-API-Key", "your_key") or given().queryParam("api_key", "your_key").
+
+Practical Examples and Coding Questions
+These questions require you to demonstrate your coding skills and practical knowledge of the framework.
+
+Write a Rest Assured script to send a GET request and validate the status code and a specific value in the response body.
+
+Java
+
+import io.restassured.RestAssured;
+import org.junit.Test;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
+
+public class GetRequestTest {
+    @Test
+    public void getRequestAndValidateResponse() {
+        // Set the base URI
+        RestAssured.baseURI = "https://jsonplaceholder.typicode.com";
+
+        // Make a GET request and validate the response
+        given()
+        .when()
+            .get("/posts/1")
+        .then()
+            .statusCode(200) // Validate status code
+            .body("title", equalTo("sunt aut facere repellat provident occaecati excepturi optio reprehenderit")); // Validate a specific value
+    }
+}
+Write a Rest Assured script to send a POST request with a JSON payload and validate the status code and the created resource's ID.
+
+Java
+
+import io.restassured.RestAssured;
+import org.junit.Test;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.notNullValue;
+
+public class PostRequestTest {
+    @Test
+    public void createNewPostAndValidateId() {
+        // Set the base URI
+        RestAssured.baseURI = "https://jsonplaceholder.typicode.com";
+
+        // Define the JSON payload as a string
+        String postBody = "{"
+            + "\"title\": \"foo\","
+            + "\"body\": \"bar\","
+            + "\"userId\": 1"
+            + "}";
+
+        // Make a POST request and validate the response
+        given()
+            .header("Content-Type", "application/json")
+            .body(postBody)
+        .when()
+            .post("/posts")
+        .then()
+            .statusCode(201) // Validate status code for a successful creation
+            .body("id", notNullValue()); // Validate that an ID has been created
+    }
+}
+How would you handle a scenario where you need to pass data from one API response to a subsequent request (API chaining)?
+
+Answer: You can use the extract() method to get a value from the response and store it in a variable, which you can then use in the next request.
+
+Java
+
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
+import org.junit.Test;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
+
+public class ApiChainingTest {
+    @Test
+    public void testApiChaining() {
+        RestAssured.baseURI = "https://reqres.in";
+
+        // Step 1: Create a new user with a POST request
+        String postBody = "{\"name\": \"morpheus\", \"job\": \"leader\"}";
+
+        Response postResponse = given()
+            .header("Content-Type", "application/json")
+            .body(postBody)
+        .when()
+            .post("/api/users");
+
+        // Extract the user ID from the POST response
+        String userId = postResponse.jsonPath().getString("id");
+
+        System.out.println("Created User ID: " + userId);
+
+        // Step 2: Use the extracted ID to get the user's details with a GET request
+        given()
+        .when()
+            .get("/api/users/" + userId)
+        .then()
+            .statusCode(200)
+            .body("data.first_name", equalTo("morpheus"));
+    }
+}
